@@ -1,0 +1,83 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:10.3-alpine
+    environment:
+      - "POSTGRES_DB=shop"
+      - "POSTGRES_USER=shop"
+      - "POSTGRES_PASSWORD=secret"
+    ports:
+      - 54329:5432
+    volumes:
+      - ./docker-entrypoint:/docker-entrypoint-initdb.d
+
+
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+    expose:
+      - 9000
+    links:
+      - postgres
+    volumes:
+      - ./:/app
+
+
+  nginx-backend:
+    build:
+      context: ./docker/nginx-backend
+    links:
+      - php-fpm
+    volumes:
+      - ./:/app
+    ports:
+      - 8002:8002
+
+
+  nginx-frontend:
+    build:
+      context: ./docker/nginx-frontend
+    depends_on:
+      - php-fpm
+    volumes:
+      - ./:/app
+    ports:
+      - 8001:8001
+
+  nginx-api:
+    build:
+      context: ./docker/nginx-api
+    depends_on:
+      - php-fpm
+    volumes:
+      - ./:/app
+    ports:
+      - 8003:8003
+    working_dir: /app
+
+
+  yii:
+    build:
+      context: ./docker/php-fpm
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres
+    entrypoint: ["php", "yii"]
+    working_dir: /app
+    environment:
+      DB_DSN: "pgsql:host=postgres;dbname=shop"
+      DB_USERNAME: "shop"
+      DB_PASSWORD: "secret"
+
+volumes:
+  postgres_data:
+    external:
+      name: postgres_data
+
+
+
+
+
+

@@ -1,0 +1,44 @@
+version: '2'
+services:
+  postgres_test:
+    image: postgres:10.3-alpine
+    environment:
+      - "POSTGRES_DB=shop_test"
+      - "POSTGRES_USER=shop_test"
+      - "POSTGRES_PASSWORD=secret"
+    ports:
+      - 54328:5432
+    volumes:
+      - ./docker-entrypoint:/docker-entrypoint-initdb.d
+
+  codeception:
+    build:
+      context: ./docker/php-fpm
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres_test
+    entrypoint: ["vendor/bin/codecept"]
+    working_dir: /app
+    environment:
+      DB_DSN: "pgsql:host=postgres;dbname=shop_test"
+      DB_USERNAME: "shop_test"
+      DB_PASSWORD: "secret"
+
+  yii_test:
+    build:
+      context: ./docker/php-fpm
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres_test
+    entrypoint: ["php", "yii_test"]
+    environment:
+      DB_DSN: "pgsql:host=postgres;dbname=shop_test"
+      DB_USERNAME: "shop_test"
+      DB_PASSWORD: "secret"
+
+volumes:
+  postgres_data:
+    external:
+      name: test_postgres_data
