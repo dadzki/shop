@@ -10,8 +10,9 @@ services:
     ports:
       - 54329:5432
     volumes:
-      - ./docker-entrypoint:/docker-entrypoint-initdb.d
-
+#      - pgdata:/var/lib/postgresql/data
+#      - ./docker-entrypoint:/docker-entrypoint-initdb.d
+      - ./docker/db:/var/lib/postgresql/data
 
   php-fpm:
     build:

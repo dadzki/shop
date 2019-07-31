@@ -9,7 +9,8 @@ services:
     ports:
       - 54328:5432
     volumes:
-      - ./docker-entrypoint:/docker-entrypoint-initdb.d
+#      - ./docker-entrypoint:/docker-entrypoint-initdb.d
+      - ./docker/db:/var/lib/postgresql/data
 
   codeception:
     build:
