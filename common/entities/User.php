@@ -28,6 +28,25 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    /**
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @return User
+     */
+    public static function signUp(string $username, string $email, string $password): self
+    {
+        $user = new User();
+        $user->username = $username;
+        $user->email = $email;
+        $user->setPassword($password);
+        $user->created_at = time();
+        $user->status = self::STATUS_ACTIVE;
+        $user->generateAuthKey();
+        $user->generateEmailVerificationToken();
+
+        return $user;
+    }
 
     /**
      * {@inheritdoc}
@@ -205,5 +224,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Активность пользователя
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->status === self::STATUS_ACTIVE;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace frontend\tests\unit\models;
 
+use common\entities\User;
 use common\fixtures\UserFixture;
 use frontend\forms\SignupForm;
 
@@ -24,13 +25,13 @@ class SignupFormTest extends \Codeception\Test\Unit
 
     public function testCorrectSignup()
     {
-        $model = new SignupForm([
+        $form = new SignupForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
             'password' => 'some_password',
         ]);
 
-        $user = $model->signup();
+        $user = User::signUp($form->username, $form->email, $form->password);
         expect($user)->true();
 
         /** @var \common\entities\User $user */
@@ -53,19 +54,20 @@ class SignupFormTest extends \Codeception\Test\Unit
 
     public function testNotCorrectSignup()
     {
-        $model = new SignupForm([
+        $form = new SignupForm([
             'username' => 'troy.becker',
             'email' => 'nicolas.dianna@hotmail.com',
             'password' => 'some_password',
         ]);
 
-        expect_not($model->signup());
-        expect_that($model->getErrors('username'));
-        expect_that($model->getErrors('email'));
+        $user = User::signUp($form->username, $form->email, $form->password);
 
-        expect($model->getFirstError('username'))
+        expect_that($form->getErrors('username'));
+        expect_that($form->getErrors('email'));
+
+        expect($form->getFirstError('username'))
             ->equals('This username has already been taken.');
-        expect($model->getFirstError('email'))
+        expect($form->getFirstError('email'))
             ->equals('This email address has already been taken.');
     }
 }
