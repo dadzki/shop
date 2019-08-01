@@ -14,7 +14,7 @@ class SignService
     {
         $user = User::signUp($form->username, $form->email, $form->password);
 
-        if (!$user->save) {
+        if (!$user->save()) {
             throw new \RuntimeException('Ошибка при сохранении пользователя');
         }
 
