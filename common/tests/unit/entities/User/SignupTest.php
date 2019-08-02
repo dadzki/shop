@@ -17,7 +17,7 @@ class LoginFormTest extends \Codeception\Test\Unit
 
         $this->assertEquals($userName, $user->username);
         $this->assertEquals($email, $user->email);
-        $this->assertTrue($user->isActive());
+        $this->assertTrue($user->isInActive());
 
         $this->assertNotEquals($password, $user->password_hash);
         $this->assertNotEmpty($user->password_hash);

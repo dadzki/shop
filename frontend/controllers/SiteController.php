@@ -5,6 +5,8 @@ use frontend\forms\ResendVerificationEmailForm;
 use frontend\forms\VerifyEmailForm;
 use frontend\services\auth\PasswordResetService;
 use frontend\services\auth\SignService;
+use frontend\services\auth\VerifyEmailService;
+use frontend\services\ContactService;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
@@ -19,9 +21,43 @@ use frontend\forms\ContactForm;
 
 /**
  * Site controller
+ * @property PasswordResetService passwordResetService
+ * @property ContactService contactService
+ * @property VerifyEmailService $verifyEmailService
  */
 class SiteController extends Controller
 {
+    protected $passwordResetService;
+
+    protected $contactService;
+
+    private $verifyEmailService;
+
+    /**
+     * SiteController constructor.
+     * @param $id
+     * @param $module
+     * @param PasswordResetService $passwordResetService
+     * @param ContactService $contactService
+     * @param VerifyEmailService $verifyEmailService
+     * @param array $config
+     */
+    public function __construct(
+        $id,
+        $module,
+        PasswordResetService $passwordResetService,
+        ContactService $contactService,
+        VerifyEmailService $verifyEmailService,
+        $config = []
+    )
+    {
+        parent::__construct($id, $module, $config);
+
+        $this->passwordResetService = $passwordResetService;
+        $this->contactService = $contactService;
+        $this->verifyEmailService = $verifyEmailService;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -29,7 +65,7 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
@@ -45,7 +81,7 @@ class SiteController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -121,18 +157,20 @@ class SiteController extends Controller
      */
     public function actionContact()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
+        $form = new ContactForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->contactService->send($form);
+                Yii::$app->session->setFlash('success', 'Ваше сообщение успешно отправленно');
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
             }
 
             return $this->refresh();
         } else {
             return $this->render('contact', [
-                'model' => $model,
+                'model' => $form,
             ]);
         }
     }
@@ -178,7 +216,7 @@ class SiteController extends Controller
         $form = new PasswordResetRequestForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                (new PasswordResetService())->sendRequest($form);
+                $this->passwordResetService->sendRequest($form);
 
                 Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
 
@@ -203,14 +241,12 @@ class SiteController extends Controller
      */
     public function actionResetPassword($token)
     {
-        $service = new PasswordResetService();
-
-        $service->validateToken($token);
+        $this->passwordResetService->validateToken($token);
 
         $form = new ResetPasswordForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $service->resetPassword($token, $form);
+                $this->passwordResetService->resetPassword($token, $form);
                 Yii::$app->session->setFlash('success', 'New password saved.');
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -234,12 +270,10 @@ class SiteController extends Controller
      */
     public function actionVerifyEmail($token)
     {
-        try {
-            $model = new VerifyEmailForm($token);
-        } catch (InvalidArgumentException $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
-        if ($user = $model->verifyEmail()) {
+        $this->verifyEmailService->validateVerifyToken($token);
+
+        $form = new VerifyEmailForm();
+        if ($user = $this->verifyEmailService->verifyEmail($form)) {
             if (Yii::$app->user->login($user)) {
                 Yii::$app->session->setFlash('success', 'Your email has been confirmed!');
                 return $this->goHome();
@@ -257,17 +291,21 @@ class SiteController extends Controller
      */
     public function actionResendVerificationEmail()
     {
-        $model = new ResendVerificationEmailForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+        $form = new ResendVerificationEmailForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->verifyEmailService->sendRequest($form);
+                Yii::$app->session->setFlash('success', 'Проверьте ваш email и следуйте инструкциям.');
+
                 return $this->goHome();
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
             }
-            Yii::$app->session->setFlash('error', 'Sorry, we are unable to resend verification email for the provided email address.');
         }
 
         return $this->render('resendVerificationEmail', [
-            'model' => $model
+            'model' => $form
         ]);
     }
 }

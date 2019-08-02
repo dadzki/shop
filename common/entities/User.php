@@ -41,7 +41,7 @@ class User extends ActiveRecord implements IdentityInterface
         $user->email = $email;
         $user->setPassword($password);
         $user->created_at = time();
-        $user->status = self::STATUS_ACTIVE;
+        $user->status = self::STATUS_INACTIVE;
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
 
@@ -224,6 +224,15 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Ожидание активации email пользователя
+     * @return bool
+     */
+    public function isInActive()
+    {
+        return $this->status === self::STATUS_INACTIVE;
     }
 
     /**

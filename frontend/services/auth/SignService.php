@@ -7,9 +7,28 @@ namespace frontend\services\auth;
 use common\entities\User;
 use frontend\forms\SignupForm;
 use Yii;
+use yii\mail\MailerInterface;
 
 class SignService
 {
+    /**
+     * @var MailerInterface
+     */
+    private $mailer;
+
+    /**
+     * ContactService constructor.
+     * @param MailerInterface $mailer
+     */
+    public function __construct(MailerInterface $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
+    /**
+     * @param SignupForm $form
+     * @return User
+     */
     public function signUp(SignupForm $form): User
     {
         $user = User::signUp($form->username, $form->email, $form->password);
@@ -30,8 +49,7 @@ class SignService
      */
     protected function sendEmail($user)
     {
-        return Yii::$app
-            ->mailer
+        return $this->mailer
             ->compose(
                 ['html' => 'emailVerify-html', 'text' => 'emailVerify-text'],
                 ['user' => $user]

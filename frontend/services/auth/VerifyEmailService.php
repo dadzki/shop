@@ -5,11 +5,13 @@ namespace frontend\services\auth;
 
 use common\entities\User;
 use frontend\forms\PasswordResetRequestForm;
+use frontend\forms\ResendVerificationEmailForm;
 use frontend\forms\ResetPasswordForm;
+use frontend\forms\VerifyEmailForm;
 use Yii;
 use yii\mail\MailerInterface;
 
-class PasswordResetService
+class VerifyEmailService
 {
     /**
      * @var MailerInterface
@@ -26,72 +28,69 @@ class PasswordResetService
     }
 
     /**
-     * @param PasswordResetRequestForm $form
+     * Sends confirmation email to user
+     *
+     * @param ResendVerificationEmailForm $form
+     * @return void whether the email was sent
      */
-    public function sendRequest(PasswordResetRequestForm $form): void
+    public function sendRequest(ResendVerificationEmailForm $form)
     {
-        /* @var $user User */
         $user = User::findOne([
-            'status' => User::STATUS_ACTIVE,
             'email' => $form->email,
+            'status' => User::STATUS_INACTIVE
         ]);
 
         if (!$user) {
             throw new \DomainException('Пользователь не найден');
         }
 
-        if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
-            $user->generatePasswordResetToken();
-            if (!$user->save()) {
-                throw new \RuntimeException('Ошибка сохранения пользователя');
-            }
-        }
-
         $sentResult = $this->mailer
             ->compose(
-                ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
+                ['html' => 'emailVerify-html', 'text' => 'emailVerify-text'],
                 ['user' => $user]
             )
             ->setTo($form->email)
-            ->setSubject('Password reset for ' . Yii::$app->name)
+            ->setSubject('Account registration at ')
             ->send();
 
         if (!$sentResult) {
-            throw new \RuntimeException('Ошибка отправки запроса пользователю по смене пароля');
+            throw new \RuntimeException('Ошибка отправки запроса пользователю на уточнение email');
         }
+
     }
 
     /**
-     * Resets password.
+     * Verify email
      *
      * @param string $token
-     * @param ResetPasswordForm $form
-     * @return void if password was reset.
+     * @param VerifyEmailForm $form
+     * @return void the saved model or null if saving fails
      */
-    public function resetPassword(string $token, ResetPasswordForm $form): void
+    public function verifyEmail(VerifyEmailForm $form)
     {
-        $user = User::findByPasswordResetToken($token);
+        $user = User::findByVerificationToken($form->token);
 
         if (!$user) {
             throw new \DomainException('Пользователь не найден');
         }
 
-        $user->setPassword($form->password);
-        $user->removePasswordResetToken();
+        $user->status = User::STATUS_ACTIVE;
 
         if (!$user->save(false)) {
             throw new \RuntimeException('Ошибка сохранения пользователя');
         }
     }
 
-
-    public function validateToken($token): void
+    /**
+     * @param $token
+     */
+    public function validateVerifyToken($token): void
     {
         if (empty($token) || !is_string($token)) {
             throw new \DomainException('Password reset token cannot be blank.');
         }
 
-        if (!User::findByPasswordResetToken($token)) {
+        if (!User::findByVerificationToken($token)) {
             throw new \DomainException('Wrong password reset token.');
         }
     }
