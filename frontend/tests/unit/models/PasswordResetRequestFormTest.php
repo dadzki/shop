@@ -25,22 +25,22 @@ class PasswordResetRequestFormTest extends \Codeception\Test\Unit
         ]);
     }
 
-    public function testSendMessageWithWrongEmailAddress()
+    public function testNotExistingEmailAddress()
     {
-        $model = new PasswordResetRequestForm();
-        $model->email = 'not-existing-email@example.com';
-        expect_not($model->sendEmail());
+        $form = new PasswordResetRequestForm();
+        $form->email = 'not-existing-email@example.com';
+        expect_not($form->validate());
     }
 
-    public function testNotSendEmailsToInactiveUser()
+    public function testInactiveUser()
     {
         $user = $this->tester->grabFixture('user', 1);
         $model = new PasswordResetRequestForm();
         $model->email = $user['email'];
-        expect_not($model->sendEmail());
+        expect_not($model->validate());
     }
 
-    public function testSendEmailSuccessfully()
+    public function testSuccessfully()
     {
         $userFixture = $this->tester->grabFixture('user', 0);
         
@@ -48,7 +48,7 @@ class PasswordResetRequestFormTest extends \Codeception\Test\Unit
         $model->email = $userFixture['email'];
         $user = User::findOne(['password_reset_token' => $userFixture['password_reset_token']]);
 
-        expect_that($model->sendEmail());
+        expect_that($model->validate());
         expect_that($user->password_reset_token);
 
         $emailMessage = $this->tester->grabLastSentEmail();
