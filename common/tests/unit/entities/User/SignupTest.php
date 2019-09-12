@@ -3,7 +3,7 @@
 namespace common\tests\unit\entities\User;
 
 
-use common\entities\User;
+use shop\entities\User;
 
 class LoginFormTest extends \Codeception\Test\Unit
 {

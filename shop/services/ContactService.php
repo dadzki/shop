@@ -1,12 +1,12 @@
 <?php
 
 
-namespace frontend\services;
+namespace shop\services;
 
 
-use common\entities\User;
-use frontend\forms\ContactForm;
-use frontend\forms\SignupForm;
+use shop\entities\User;
+use shop\forms\ContactForm;
+use shop\forms\auth\SignupForm;
 use http\Exception\RuntimeException;
 use Yii;
 use yii\mail\MailerInterface;

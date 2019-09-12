@@ -1,7 +1,7 @@
 <?php
 namespace frontend\tests\unit\models;
 
-use frontend\forms\ContactForm;
+use shop\forms\ContactForm;
 use yii\mail\MessageInterface;
 
 class ContactFormTest extends \Codeception\Test\Unit

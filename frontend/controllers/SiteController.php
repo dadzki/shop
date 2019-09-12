@@ -1,29 +1,31 @@
 <?php
 namespace frontend\controllers;
 
-use frontend\forms\ResendVerificationEmailForm;
-use frontend\forms\VerifyEmailForm;
-use frontend\services\auth\PasswordResetService;
-use frontend\services\auth\SignService;
-use frontend\services\auth\VerifyEmailService;
-use frontend\services\ContactService;
+use shop\services\auth\AuthService;
+use shop\forms\auth\ResendVerificationEmailForm;
+use shop\forms\auth\VerifyEmailForm;
+use shop\services\auth\PasswordResetService;
+use shop\services\auth\SignService;
+use shop\services\auth\VerifyEmailService;
+use shop\services\ContactService;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use common\forms\LoginForm;
-use frontend\forms\PasswordResetRequestForm;
-use frontend\forms\ResetPasswordForm;
-use frontend\forms\SignupForm;
-use frontend\forms\ContactForm;
+use shop\forms\LoginForm;
+use shop\forms\auth\PasswordResetRequestForm;
+use shop\forms\auth\ResetPasswordForm;
+use shop\forms\auth\SignupForm;
+use shop\forms\ContactForm;
 
 /**
  * Site controller
  * @property PasswordResetService passwordResetService
  * @property ContactService contactService
  * @property VerifyEmailService $verifyEmailService
+ * @property AuthService $authService
  */
 class SiteController extends Controller
 {
@@ -33,6 +35,8 @@ class SiteController extends Controller
 
     private $verifyEmailService;
 
+    private $authService;
+
     /**
      * SiteController constructor.
      * @param $id
@@ -40,6 +44,7 @@ class SiteController extends Controller
      * @param PasswordResetService $passwordResetService
      * @param ContactService $contactService
      * @param VerifyEmailService $verifyEmailService
+     * @param AuthService $authService
      * @param array $config
      */
     public function __construct(
@@ -48,6 +53,7 @@ class SiteController extends Controller
         PasswordResetService $passwordResetService,
         ContactService $contactService,
         VerifyEmailService $verifyEmailService,
+        AuthService $authService,
         $config = []
     )
     {
@@ -56,6 +62,7 @@ class SiteController extends Controller
         $this->passwordResetService = $passwordResetService;
         $this->contactService = $contactService;
         $this->verifyEmailService = $verifyEmailService;
+        $this->authService = $authService;
     }
 
     /**
@@ -126,16 +133,21 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            $model->password = '';
-
-            return $this->render('login', [
-                'model' => $model,
-            ]);
+        $form = new LoginForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $user = $this->authService->auth($form);
+                Yii::$app->user->login($user, $form->rememberMe ? Yii::$app->params['user.rememberMeDuration'] : 0);
+                return $this->goBack();
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
         }
+
+        return $this->render('login', [
+            'model' => $form,
+        ]);
     }
 
     /**

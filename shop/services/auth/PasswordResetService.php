@@ -1,11 +1,12 @@
 <?php
 
 
-namespace frontend\services\auth;
+namespace shop\services\auth;
 
-use common\entities\User;
-use frontend\forms\PasswordResetRequestForm;
-use frontend\forms\ResetPasswordForm;
+use shop\entities\User;
+use shop\forms\auth\PasswordResetRequestForm;
+use shop\forms\auth\ResetPasswordForm;
+use shop\repositories\UserRepository;
 use Yii;
 use yii\mail\MailerInterface;
 
@@ -16,13 +17,17 @@ class PasswordResetService
      */
     protected $mailer;
 
+    protected $users;
+
     /**
      * PasswordResetService constructor.
      * @param MailerInterface $mailer
+     * @param UserRepository $users
      */
-    public function __construct(MailerInterface $mailer)
+    public function __construct(MailerInterface $mailer, UserRepository $users)
     {
         $this->mailer = $mailer;
+        $this->users = $users;
     }
 
     /**
@@ -31,16 +36,13 @@ class PasswordResetService
     public function sendRequest(PasswordResetRequestForm $form): void
     {
         /* @var $user User */
-        $user = User::findOne([
-            'status' => User::STATUS_ACTIVE,
-            'email' => $form->email,
-        ]);
+        $user = $this->users->findByEmail($form->email);
 
         if (!$user) {
             throw new \DomainException('Пользователь не найден');
         }
 
-        if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
+        if (!$this->users->isPasswordResetTokenValid($user->password_reset_token)) {
             $user->generatePasswordResetToken();
             if (!$user->save()) {
                 throw new \RuntimeException('Ошибка сохранения пользователя');
@@ -70,7 +72,7 @@ class PasswordResetService
      */
     public function resetPassword(string $token, ResetPasswordForm $form): void
     {
-        $user = User::findByPasswordResetToken($token);
+        $user = $this->users->findByPasswordResetToken($token);
 
         if (!$user) {
             throw new \DomainException('Пользователь не найден');
@@ -91,7 +93,7 @@ class PasswordResetService
             throw new \DomainException('Password reset token cannot be blank.');
         }
 
-        if (!User::findByPasswordResetToken($token)) {
+        if (!$this->users->findByPasswordResetToken($token)) {
             throw new \DomainException('Wrong password reset token.');
         }
     }

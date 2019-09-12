@@ -1,13 +1,14 @@
 <?php
 
 
-namespace frontend\services\auth;
+namespace shop\services\auth;
 
-use common\entities\User;
-use frontend\forms\PasswordResetRequestForm;
-use frontend\forms\ResendVerificationEmailForm;
-use frontend\forms\ResetPasswordForm;
-use frontend\forms\VerifyEmailForm;
+use shop\entities\User;
+use shop\forms\auth\PasswordResetRequestForm;
+use shop\forms\auth\ResendVerificationEmailForm;
+use shop\forms\auth\ResetPasswordForm;
+use shop\forms\auth\VerifyEmailForm;
+use shop\repositories\UserRepository;
 use Yii;
 use yii\mail\MailerInterface;
 
@@ -18,13 +19,16 @@ class VerifyEmailService
      */
     protected $mailer;
 
+    protected $users;
+
     /**
      * PasswordResetService constructor.
      * @param MailerInterface $mailer
      */
-    public function __construct(MailerInterface $mailer)
+    public function __construct(MailerInterface $mailer, UserRepository $users)
     {
         $this->mailer = $mailer;
+        $this->users = $users;
     }
 
     /**
@@ -35,10 +39,8 @@ class VerifyEmailService
      */
     public function sendRequest(ResendVerificationEmailForm $form)
     {
-        $user = User::findOne([
-            'email' => $form->email,
-            'status' => User::STATUS_INACTIVE
-        ]);
+        /* @var $user User */
+        $user = $this->users->findByEmailInactive($form->email);
 
         if (!$user) {
             throw new \DomainException('Пользователь не найден');
@@ -68,7 +70,7 @@ class VerifyEmailService
      */
     public function verifyEmail(VerifyEmailForm $form)
     {
-        $user = User::findByVerificationToken($form->token);
+        $user = $this->users->findByVerificationToken($form->token);
 
         if (!$user) {
             throw new \DomainException('Пользователь не найден');
@@ -90,7 +92,7 @@ class VerifyEmailService
             throw new \DomainException('Password reset token cannot be blank.');
         }
 
-        if (!User::findByVerificationToken($token)) {
+        if (!$this->users->findByVerificationToken($token)) {
             throw new \DomainException('Wrong password reset token.');
         }
     }

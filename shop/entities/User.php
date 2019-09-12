@@ -1,9 +1,11 @@
 <?php
-namespace common\entities;
+namespace shop\entities;
 
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -21,6 +23,7 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property Network[] $networks
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -49,6 +52,37 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @param $network
+     * @param $identity
+     * @return User
+     */
+    public static function signUpByNetwork($network, $identity): self
+    {
+        $user = new User();
+        $user->created_at = time();
+        $user->status = self::STATUS_ACTIVE;
+        $user->generateAuthKey();
+        $user->networks = [Network::create($network, $identity)];
+
+        return $user;
+    }
+
+    public function attachNetwork($network, $identity): void
+    {
+        $networks = $this->networks;
+        foreach ($networks as $current) {
+            if ($current->isFor($network, $identity)) {
+                throw new \DomainException('Network is already attached.');
+            }
+        }
+
+        $networks[] = Network::create($network, $identity);
+
+        $this->networks = $networks;
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -63,6 +97,17 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
+            [
+                'class' => SaveRelationsBehavior::className(),
+                'relations' => ['networks'],
+            ],
+        ];
+    }
+
+    public function transactions()
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL,
         ];
     }
 
@@ -104,53 +149,6 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
     }
 
-    /**
-     * Finds user by password reset token
-     *
-     * @param string $token password reset token
-     * @return static|null
-     */
-    public static function findByPasswordResetToken($token)
-    {
-        if (!static::isPasswordResetTokenValid($token)) {
-            return null;
-        }
-
-        return static::findOne([
-            'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
-        ]);
-    }
-
-    /**
-     * Finds user by verification email token
-     *
-     * @param string $token verify email token
-     * @return static|null
-     */
-    public static function findByVerificationToken($token) {
-        return static::findOne([
-            'verification_token' => $token,
-            'status' => self::STATUS_INACTIVE
-        ]);
-    }
-
-    /**
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
-     * @return bool
-     */
-    public static function isPasswordResetTokenValid($token)
-    {
-        if (empty($token)) {
-            return false;
-        }
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-        return $timestamp + $expire >= time();
-    }
 
     /**
      * {@inheritdoc}
@@ -242,5 +240,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function isActive()
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function getNetworks(): ActiveQuery
+    {
+        return $this->hasMany(Network::class, ['user_id' => 'id']);
     }
 }
