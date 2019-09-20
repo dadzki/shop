@@ -98,4 +98,12 @@ class UserRepository
         return User::findOne(['id' => $id]);
     }
 
+
+    public function remove(User $user): void
+    {
+        if (!$user->delete()) {
+            throw new \RuntimeException('Ошибка удаления.');
+        }
+    }
+
 }

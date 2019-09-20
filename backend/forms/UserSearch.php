@@ -9,7 +9,7 @@ use shop\entities\User;
 /**
  * UserSearch represents the model behind the search form of `shop\entities\User`.
  */
-class UserSearch extends User
+class UserSearch extends Model
 {
     public $id;
     public $date_from;
