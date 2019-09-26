@@ -4,7 +4,7 @@
 namespace shop\repositories;
 
 
-class NotFoundException
+class NotFoundException extends \DomainException
 {
 
 }

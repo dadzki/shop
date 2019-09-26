@@ -1,6 +1,6 @@
 <?php
 
-namespace shop\forms\manage;
+namespace shop\forms\manage\user;
 
 use shop\entities\User;
 use yii\base\Model;

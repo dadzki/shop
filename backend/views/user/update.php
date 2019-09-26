@@ -4,7 +4,7 @@ use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model shop\forms\manage\UserEditForm */
+/* @var $model \shop\forms\manage\user\UserEditForm */
 /* @var $user shop\entities\User */
 
 
