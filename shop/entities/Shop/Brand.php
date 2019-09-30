@@ -7,7 +7,6 @@ namespace shop\entities\Shop;
 use shop\entities\behaviors\MetaBehavior;
 use shop\entities\Meta;
 use yii\db\ActiveRecord;
-use yii\helpers\Json;
 
 /**
  * @property integer $id
