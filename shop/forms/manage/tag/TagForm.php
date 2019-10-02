@@ -1,6 +1,6 @@
 <?php
 
-namespace shop\forms\manage\Shop;
+namespace shop\forms\manage\tag;
 
 use shop\entities\Shop\Tag;
 use shop\validator\SlugValidator;

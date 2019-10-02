@@ -18,6 +18,18 @@ class Brand extends ActiveRecord
 {
     public $meta;
 
+    public static function tableName(): string
+    {
+        return '{{%shop_brands}}';
+    }
+
+    public function behaviors(): array
+    {
+        return [
+            MetaBehavior::class,
+        ];
+    }
+
     public static function create($name, $slug, Meta $meta): self
     {
         $brand = new static();
@@ -33,19 +45,5 @@ class Brand extends ActiveRecord
         $this->name = $name;
         $this->slug = $slug;
         $this->meta = $meta;
-    }
-
-
-
-    public static function tableName(): string
-    {
-        return '{{%shop_brands}}';
-    }
-
-    public function behaviors(): array
-    {
-        return [
-            MetaBehavior::class,
-        ];
     }
 }
