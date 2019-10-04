@@ -25,7 +25,10 @@
         "yiisoft/yii2-authclient": "^2.2",
         "kartik-v/yii2-widgets": "*",
         "kartik-v/yii2-field-range": "dev-master",
-        "paulzi/yii2-nested-sets": "^1.1"
+        "paulzi/yii2-nested-sets": "^1.1",
+        "yii-dream-team/yii2-upload-behavior": "*",
+        "bower-asset/font-awesome": "^5.11",
+        "bower-asset/owl.carousel": "^2.3"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

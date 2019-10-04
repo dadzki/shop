@@ -29,6 +29,8 @@ use shop\forms\ContactForm;
  */
 class SiteController extends Controller
 {
+    public $layout = 'cabinet';
+
     protected $passwordResetService;
 
     protected $contactService;
@@ -119,6 +121,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        $this->layout = 'home';
+
         return $this->render('index');
     }
 

@@ -8,6 +8,8 @@ return [
         '' => 'site/index',
         '<_a:login|logout|about|contact|signup>' => 'site/<_a>',
 
+        'catalog' => 'shop/catalog/index',
+
         'cabinet' => 'cabinet/default/index',
         'cabinet/<_c:[\w\-]+>' => 'cabinet/<_c>/index',
         'cabinet/<_c:[\w\-]+>/<id:\d+>' => 'cabinet/<_c>/view',

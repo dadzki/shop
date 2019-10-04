@@ -2,10 +2,13 @@
 
 namespace shop\services\manage\Shop;
 
+use shop\entities\Meta;
 use shop\entities\Shop\Product\Product;
 use shop\entities\Shop\Tag;
 use shop\forms\manage\Product\CategoriesForm;
 use shop\forms\manage\Product\ModificationForm;
+use shop\forms\manage\Product\PhotosForm;
+use shop\forms\manage\Product\PriceForm;
 use shop\forms\manage\Product\ProductCreateForm;
 use shop\forms\manage\Product\ProductEditForm;
 use shop\repositories\Shop\BrandRepository;
@@ -47,6 +50,7 @@ class ProductManageService
             $category->id,
             $form->code,
             $form->name,
+            $form->description,
             new Meta(
                 $form->meta->title,
                 $form->meta->description,
@@ -93,10 +97,13 @@ class ProductManageService
     {
         $product = $this->products->get($id);
         $brand = $this->brands->get($form->brandId);
+        $category = $this->categories->get($form->categories->main);
+
         $product->edit(
             $brand->id,
             $form->code,
             $form->name,
+            $form->description,
             new Meta(
                 $form->meta->title,
                 $form->meta->description,
@@ -104,18 +111,28 @@ class ProductManageService
             )
         );
 
-        foreach ($form->values as $value) {
-            $product->setValue($value->id, $value->value);
-        }
 
-        $product->revokeTags();
-
-        foreach ($form->tags->existing as $tagId) {
-            $tag = $this->tags->get($tagId);
-            $product->assignTag($tag->id);
-        }
+        $product->changeMainCategory($category->id);
 
         $this->transaction->wrap(function () use ($product, $form) {
+            $product->revokeCategories();
+            $product->revokeTags();
+            $this->products->save($product);
+
+            foreach ($form->categories->others as $otherId) {
+                $category = $this->categories->get($otherId);
+                $product->assignCategory($category->id);
+            }
+
+            foreach ($form->values as $value) {
+                $product->setValue($value->id, $value->value);
+            }
+
+            foreach ($form->tags->existing as $tagId) {
+                $tag = $this->tags->get($tagId);
+                $product->assignTag($tag->id);
+            }
+
             foreach ($form->tags->newNames as $tagName) {
                 if (!$tag = $this->tags->findByName($tagName)) {
                     $tag = Tag::create($tagName, $tagName);
@@ -125,26 +142,6 @@ class ProductManageService
             }
             $this->products->save($product);
         });
-    }
-
-    public function changeCategories($id, CategoriesForm $form): void
-    {
-        $product = $this->products->get($id);
-        $category = $this->categories->get($form->main);
-        $product->changeMainCategory($category->id);
-        $product->revokeCategories();
-
-        foreach ($form->others as $otherId) {
-            $category = $this->categories->get($otherId);
-            $product->assignCategory($category->id);
-        }
-
-        foreach ($form->values as $value) {
-            $product->setValue($value->id, $value->value);
-        }
-
-
-        $this->products->save($product);
     }
 
     public function addPhotos($id, PhotosForm $form): void
@@ -232,4 +229,10 @@ class ProductManageService
         $this->products->save($product);
     }
 
+    public function changePrice($id, PriceForm $form): void
+    {
+        $product = $this->products->get($id);
+        $product->setPrice($form->new, $form->old);
+        $this->products->save($product);
+    }
 }

@@ -17,7 +17,9 @@ class PhotosForm extends Model
     public function rules(): array
     {
         return [
-            ['files', 'each', 'rule' => ['image']],
+            ['files', 'each', 'rule' => ['image','maxSize' => 1024 * 1024 * 50,
+//                , 'tooBig' =>'File has to be smaller than 50MB'
+            ]],
         ];
     }
 

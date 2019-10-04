@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5157abadab628f69ecaf9adeda0ace83",
+    "content-hash": "dd8d000b91fdf902400eca99ba6c228b",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -71,6 +71,21 @@
             ]
         },
         {
+            "name": "bower-asset/font-awesome",
+            "version": "5.11.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "1c1b102b2ba19518d77e60e97cf1b4ebf133bba0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/1c1b102b2ba19518d77e60e97cf1b4ebf133bba0",
+                "reference": "1c1b102b2ba19518d77e60e97cf1b4ebf133bba0"
+            },
+            "type": "bower-asset"
+        },
+        {
             "name": "bower-asset/inputmask",
             "version": "3.3.11",
             "source": {
@@ -108,6 +123,24 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "bower-asset/owl.carousel",
+            "version": "2.3.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/OwlCarousel2/OwlCarousel2.git",
+                "reference": "af851f9b567630d115930abd5480ffebccc72372"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/OwlCarousel2/OwlCarousel2/zipball/af851f9b567630d115930abd5480ffebccc72372",
+                "reference": "af851f9b567630d115930abd5480ffebccc72372"
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.8.3"
+            },
+            "type": "bower-asset"
         },
         {
             "name": "bower-asset/punycode",
@@ -1900,6 +1933,53 @@
             "time": "2019-06-22T13:36:08+00:00"
         },
         {
+            "name": "masterexploder/phpthumb",
+            "version": "2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/masterexploder/PHPThumb.git",
+                "reference": "01f6aa65aa3d136e175f67da2b4ea3e316770d02"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/masterexploder/PHPThumb/zipball/01f6aa65aa3d136e175f67da2b4ea3e316770d02",
+                "reference": "01f6aa65aa3d136e175f67da2b4ea3e316770d02",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPThumb": "src",
+                    "PHPThumb\\Tests": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jarrod Nettles",
+                    "email": "jarrod.nettles@icloud.com"
+                },
+                {
+                    "name": "Ian Selby",
+                    "email": "ian@gxdlabs.com"
+                }
+            ],
+            "description": "A library for manipulating images in PHP.",
+            "homepage": "https://github.com/masterexploder/PHPThumb",
+            "keywords": [
+                "image",
+                "resize",
+                "rotate"
+            ],
+            "time": "2015-09-08T22:55:44+00:00"
+        },
+        {
             "name": "paulzi/yii2-nested-sets",
             "version": "v1.1.0",
             "source": {
@@ -2549,6 +2629,55 @@
                 "validate"
             ],
             "time": "2019-08-24T08:43:50+00:00"
+        },
+        {
+            "name": "yii-dream-team/yii2-upload-behavior",
+            "version": "1.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yii-dream-team/yii2-upload-behavior.git",
+                "reference": "cdb45e68014476765188c387fafcb7fd30d2ad0a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yii-dream-team/yii2-upload-behavior/zipball/cdb45e68014476765188c387fafcb7fd30d2ad0a",
+                "reference": "cdb45e68014476765188c387fafcb7fd30d2ad0a",
+                "shasum": ""
+            },
+            "require": {
+                "masterexploder/phpthumb": "*",
+                "php": ">=5.4.0",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "yiidreamteam\\upload\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexey Samoylov",
+                    "email": "alexey.samoylov@gmail.com",
+                    "homepage": "http://yiidreamteam.com/team/alexey",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Yii2 file/image upload behavior for ActiveRecord",
+            "homepage": "http://yiidreamteam.com/yii2/upload-behavior",
+            "keywords": [
+                "Behavior",
+                "file",
+                "image",
+                "resize",
+                "thumb",
+                "upload"
+            ],
+            "time": "2017-10-26T15:44:40+00:00"
         },
         {
             "name": "yiisoft/yii2",

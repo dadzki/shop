@@ -6,17 +6,40 @@ namespace shop\entities\Shop\Product;
 
 use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
+use yiidreamteam\upload\ImageUploadBehavior;
 
 /**
  * @property integer $id
  * @property string $file
  * @property integer $sort
+ *
+ * @mixin ImageUploadBehavior
+ *
  */
 class Photo extends ActiveRecord
 {
     public static function tableName(): string
     {
         return '{{%shop_photos}}';
+    }
+
+    public function behaviors(): array
+    {
+        return [
+            [
+                'class' => ImageUploadBehavior::class,
+                'attribute' => 'file',
+                'createThumbsOnRequest' => true,
+                'filePath' => '@webroot/upload/shop/[[attribute_product_id]]/[[id]].[[extension]]',
+                'fileUrl' => '@web/upload/shop/[[attribute_product_id]]/[[id]].[[extension]]',
+                'thumbPath' => '@webroot/upload/shop/thumb/[[attribute_product_id]]/[[profile]]_[[id]].[[extension]]',
+                'thumbUrl' => '@web/upload/shop/thumb/[[attribute_product_id]]/[[profile]]_[[id]].[[extension]]',
+                'thumbs' => [
+                    'admin' => ['width' => 100, 'height' => 70],
+                    'thumb' => ['width' => 640, 'height' => 480],
+                ],
+            ],
+        ];
     }
 
     public static function create(UploadedFile $file): self

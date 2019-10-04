@@ -27,6 +27,7 @@ class CharacteristicManageService
             $form->variants,
             $form->sort
         );
+
         $this->characteristics->save($characteristic);
 
         return $characteristic;
