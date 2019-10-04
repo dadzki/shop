@@ -44,6 +44,7 @@ services:
       - php-fpm
     volumes:
       - ./:/app
+      - ./backend/web/upload:/app/frontend/web/upload
     ports:
       - 8001:8001
 
