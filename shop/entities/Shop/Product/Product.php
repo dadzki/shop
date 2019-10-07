@@ -533,4 +533,10 @@ class Product extends ActiveRecord
         $this->reviews = $reviews;
         $this->rating = $amount ? $total / $amount : null;
     }
+
+    public function getSeoTitle(): string
+    {
+        return $this->meta->title ?: $this->name;
+    }
+
 }

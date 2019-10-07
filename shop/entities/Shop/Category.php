@@ -21,6 +21,7 @@ use yii\db\ActiveRecord;
  * @property Meta $meta
  *
  * @property Category $parent
+ * @property Category[] $parents
  * @property Category[] $children
  * @property Category $prev
  * @property Category $next
@@ -29,26 +30,6 @@ use yii\db\ActiveRecord;
 class Category extends ActiveRecord
 {
     public $meta;
-
-    public static function create($name, $slug, $title, $description, Meta $meta): self
-    {
-        $category = new static();
-        $category->name = $name;
-        $category->slug = $slug;
-        $category->title = $title;
-        $category->description = $description;
-        $category->meta = $meta;
-        return $category;
-    }
-
-    public function edit($name, $slug, $title, $description, Meta $meta): void
-    {
-        $this->name = $name;
-        $this->slug = $slug;
-        $this->title = $title;
-        $this->description = $description;
-        $this->meta = $meta;
-    }
 
     public static function tableName(): string
     {
@@ -73,5 +54,35 @@ class Category extends ActiveRecord
     public static function find(): CategoryQuery
     {
         return new CategoryQuery(static::class);
+    }
+
+    public static function create($name, $slug, $title, $description, Meta $meta): self
+    {
+        $category = new static();
+        $category->name = $name;
+        $category->slug = $slug;
+        $category->title = $title;
+        $category->description = $description;
+        $category->meta = $meta;
+        return $category;
+    }
+
+    public function edit($name, $slug, $title, $description, Meta $meta): void
+    {
+        $this->name = $name;
+        $this->slug = $slug;
+        $this->title = $title;
+        $this->description = $description;
+        $this->meta = $meta;
+    }
+
+    public function getSeoTitle(): string
+    {
+        return $this->meta->title ?: $this->getHeadingTile();
+    }
+
+    public function getHeadingTile(): string
+    {
+        return $this->title ?: $this->name;
     }
 }

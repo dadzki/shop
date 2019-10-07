@@ -52,6 +52,12 @@ class ProductReadRepository
         return Product::find()->active()->andWhere(['id' => $id])->one();
     }
 
+    public function getFeatured($limit): array
+    {
+        return Product::find()->active()->with('mainPhoto')->orderBy(['id' => SORT_DESC])->limit($limit)->all();
+    }
+
+
     private function getProvider(ActiveQuery $query): ActiveDataProvider
     {
         return new ActiveDataProvider([
@@ -77,6 +83,9 @@ class ProductReadRepository
                     ],
                 ],
             ],
+            'pagination' => [
+                'pageSizeLimit' => [15, 100],
+            ]
         ]);
     }
 }
