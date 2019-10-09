@@ -3,6 +3,8 @@
 
 namespace common\bootstrap;
 
+use Elasticsearch\Client;
+use Elasticsearch\ClientBuilder;
 use shop\services\auth\AuthService;
 use shop\services\auth\NetworkService;
 use shop\services\auth\PasswordResetService;
@@ -19,6 +21,10 @@ class SetUp implements BootstrapInterface
     public function bootstrap($app)
     {
         $container = Yii::$container;
+
+        $container->setSingleton(Client::class, function () {
+            return ClientBuilder::create()->setHosts(['elasticsearch'])->build();
+        });
 
         $container->setSingleton(MailerInterface::class, function () use ($app) {
             return $app->mailer;

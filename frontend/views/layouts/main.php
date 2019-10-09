@@ -77,6 +77,8 @@ AppAsset::register($this);
                             <li><a href="<?= Html::encode(Url::to(['/site/login'])) ?>">Login</a></li>
                             <li><a href="<?= Html::encode(Url::to(['/site/signup'])) ?>">Signup</a></li>
                         <?php else: ?>
+                            <li><a href="<?= Html::encode(Url::to(['/cabinet/default/index'])) ?>">Cabinet</a></li>
+
                             <li><a href="<?= Html::encode(Url::to(['/site/logout'])) ?>" data-method="post">Logout</a></li>
                         <?php endif; ?>
                     </ul>
@@ -105,12 +107,14 @@ AppAsset::register($this);
                 </div>
             </div>
             <div class="col-sm-5">
+                <?= Html::beginForm(['/shop/catalog/search'], 'get') ?>
                 <div id="search" class="input-group">
-                    <input type="text" name="search" value="" placeholder="Search" class="form-control input-lg"/>
+                    <input type="text" name="text" value="" placeholder="Search" class="form-control input-lg"/>
                     <span class="input-group-btn">
-    <button type="button" class="btn btn-default btn-lg"><i class="fa fa-search"></i></button>
-  </span>
+                        <button type="submit" class="btn btn-default btn-lg"><i class="fa fa-search"></i></button>
+                    </span>
                 </div>
+                <?= Html::endForm() ?>
             </div>
             <div class="col-sm-3">
                 <div id="cart" class="btn-group btn-block">
