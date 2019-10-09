@@ -2,6 +2,7 @@
 namespace shop\entities;
 
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+use shop\entities\User\WishlistItem;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -24,6 +25,7 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property Network[] $networks
+ * @property WishlistItem[] $wishlistItems
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -124,10 +126,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
             [
-                'class' => SaveRelationsBehavior::className(),
-                'relations' => ['networks'],
+                'class' => SaveRelationsBehavior::class,
+                'relations' => ['networks', 'wishlistItems'],
             ],
         ];
     }
@@ -273,5 +275,36 @@ class User extends ActiveRecord implements IdentityInterface
     public function getNetworks(): ActiveQuery
     {
         return $this->hasMany(Network::class, ['user_id' => 'id']);
+    }
+
+    public function getWishlistItems(): ActiveQuery
+    {
+        return $this->hasMany(WishlistItem::class, ['user_id' => 'id']);
+    }
+
+    public function addToWishList($productId): void
+    {
+        $items = $this->wishlistItems;
+        foreach ($items as $item) {
+            if ($item->isForProduct($productId)) {
+                throw new \DomainException('Item is already added.');
+            }
+        }
+        $items[] = WishlistItem::create($productId);
+
+        $this->wishlistItems = $items;
+    }
+
+    public function removeFromWishList($productId): void
+    {
+        $items = $this->wishlistItems;
+        foreach ($items as $i => $item) {
+            if ($item->isForProduct($productId)) {
+                unset($items[$i]);
+                $this->wishlistItems = $items;
+                return;
+            }
+        }
+        throw new \DomainException('Item is not found.');
     }
 }
