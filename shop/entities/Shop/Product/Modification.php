@@ -11,6 +11,7 @@ use yii\db\ActiveRecord;
  * @property string $code
  * @property string $name
  * @property string $price
+ * @property int $quantity
  */
 class Modification extends ActiveRecord
 {
@@ -19,21 +20,23 @@ class Modification extends ActiveRecord
         return '{{%shop_modifications}}';
     }
 
-    public static function create($code, $name, $price): self
+    public static function create($code, $name, $price, $quantity): self
     {
         $modification = new static();
         $modification->code = $code;
         $modification->name = $name;
         $modification->price = $price;
+        $modification->quantity = $quantity;
 
         return $modification;
     }
 
-    public function edit($code, $name, $price): void
+    public function edit($code, $name, $price, $quantity): void
     {
         $this->code = $code;
         $this->name = $name;
         $this->price = $price;
+        $this->quantity = $quantity;
     }
 
     public function isIdEqualTo($id)
