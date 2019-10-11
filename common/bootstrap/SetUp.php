@@ -5,6 +5,9 @@ namespace common\bootstrap;
 
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use shop\cart\Cart;
+use shop\cart\cost\calculator\SimpleCost;
+use shop\cart\storage\SessionStorage;
 use shop\services\auth\AuthService;
 use shop\services\auth\NetworkService;
 use shop\services\auth\PasswordResetService;
@@ -44,6 +47,11 @@ class SetUp implements BootstrapInterface
             $app->params['adminEmail'],
         ]);
 
-
+        $container->setSingleton(Cart::class, function () {
+            return new Cart(
+                new SessionStorage('cart'),
+                new SimpleCost()
+            );
+        });
     }
 }
