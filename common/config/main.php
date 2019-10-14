@@ -15,5 +15,20 @@ return [
 //            'class' => 'yii\caching\FileCache',
 //            'cachePath' => '@common/runtime/cache',
         ],
+        'mailer' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'viewPath' => '@common/mail',
+            'useFileTransport' => true,
+            'messageConfig' => [
+                'from' => ['support@example.com' => 'Shop']
+            ],
+        ],
+        'robokassa' => [
+            'class' => '\robokassa\Merchant',
+            'baseUrl' => 'https://auth.robokassa.ru/Merchant/Index.aspx',
+            'sMerchantLogin' => '',
+            'sMerchantPass1' => '',
+            'sMerchantPass2' => '',
+        ],
     ],
 ];

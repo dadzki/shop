@@ -187,7 +187,7 @@ AppAsset::register($this);
                 <h5>My Account</h5>
                 <ul class="list-unstyled">
                     <li><a href="/index.php?route=account/account">My Account</a></li>
-                    <li><a href="/index.php?route=account/order">Order History</a></li>
+                    <li><a href="/account/order">Order History</a></li>
                     <li><a href="/index.php?route=account/wishlist">Wish List</a></li>
                     <li><a href="/index.php?route=account/newsletter">Newsletter</a></li>
                 </ul>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe19b7447bdb64bf00c8490b73add892",
+    "content-hash": "379b027640a774f49cbe6ee52cd81582",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -2901,6 +2901,54 @@
                 "validate"
             ],
             "time": "2019-08-24T08:43:50+00:00"
+        },
+        {
+            "name": "yii-cms/yii2-robokassa",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yii-cms/yii2-robokassa.git",
+                "reference": "b7f02c5e33a727e13868d2bfc523a90909efbb55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yii-cms/yii2-robokassa/zipball/b7f02c5e33a727e13868d2bfc523a90909efbb55",
+                "reference": "b7f02c5e33a727e13868d2bfc523a90909efbb55",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0.14"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.8.27|~5.7.21|^6.2"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "robokassa\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Gonimar",
+                    "email": "sergey.gonimar@gmail.com"
+                }
+            ],
+            "description": "Robokassa payment extension.",
+            "keywords": [
+                "robokassa",
+                "yii2"
+            ],
+            "time": "2019-07-02T05:29:41+00:00"
         },
         {
             "name": "yii-dream-team/yii2-upload-behavior",
