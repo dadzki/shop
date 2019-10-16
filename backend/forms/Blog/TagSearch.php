@@ -1,20 +1,23 @@
 <?php
 
-namespace backend\forms\Shop;
 
-use shop\entities\Shop\Order\Order;
-use shop\helpers\OrderHelper;
+namespace backend\forms\Blog;
+
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use shop\entities\Blog\Tag;
 
-class OrderSearch extends Model
+class TagSearch extends Model
 {
     public $id;
+    public $name;
+    public $slug;
 
     public function rules(): array
     {
         return [
             [['id'], 'integer'],
+            [['name', 'slug'], 'safe'],
         ];
     }
 
@@ -24,12 +27,12 @@ class OrderSearch extends Model
      */
     public function search(array $params): ActiveDataProvider
     {
-        $query = Order::find();
+        $query = Tag::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [
-                'defaultOrder' => ['id' => SORT_DESC]
+                'defaultOrder' => ['name' => SORT_ASC]
             ]
         ]);
 
@@ -44,11 +47,10 @@ class OrderSearch extends Model
             'id' => $this->id,
         ]);
 
-        return $dataProvider;
-    }
+        $query
+            ->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'slug', $this->slug]);
 
-    public function statusList(): array
-    {
-        return OrderHelper::statusList();
+        return $dataProvider;
     }
 }

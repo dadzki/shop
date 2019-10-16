@@ -1,48 +1,51 @@
 <?php
 
+namespace backend\controllers\blog;
 
-namespace backend\controllers\shop;
-
-use shop\forms\manage\Shop\Order\OrderEditForm;
-use shop\services\manage\Shop\OrderManageService;
+use shop\forms\manage\Blog\TagForm;
+use shop\services\manage\Blog\TagManageService;
 use Yii;
-use shop\entities\Shop\Order\Order;
-use backend\forms\Shop\OrderSearch;
+use shop\entities\Blog\Tag;
+use backend\forms\Blog\TagSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-class OrderController extends Controller
+class TagController extends Controller
 {
     private $service;
-    public function __construct($id, $module, OrderManageService $service, $config = [])
+
+    public function __construct($id, $module, TagManageService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
     }
+
     public function behaviors(): array
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
             ],
         ];
     }
+
     /**
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new OrderSearch();
+        $searchModel = new TagSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
+
     /**
      * @param integer $id
      * @return mixed
@@ -50,21 +53,43 @@ class OrderController extends Controller
     public function actionView($id)
     {
         return $this->render('view', [
-            'order' => $this->findModel($id),
+            'tag' => $this->findModel($id),
         ]);
     }
+
+    /**
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $form = new TagForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $tag = $this->service->create($form);
+                return $this->redirect(['view', 'id' => $tag->id]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+        return $this->render('create', [
+            'model' => $form,
+        ]);
+    }
+
     /**
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
-        $order = $this->findModel($id);
-        $form = new OrderEditForm($order);
+        $tag = $this->findModel($id);
+        $form = new TagForm($tag);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($order->id, $form);
-                return $this->redirect(['view', 'id' => $order->id]);
+                $this->service->edit($tag->id, $form);
+                return $this->redirect(['view', 'id' => $tag->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -72,9 +97,10 @@ class OrderController extends Controller
         }
         return $this->render('update', [
             'model' => $form,
-            'order' => $order,
+            'tag' => $tag,
         ]);
     }
+
     /**
      * @param integer $id
      * @return mixed
@@ -89,14 +115,15 @@ class OrderController extends Controller
         }
         return $this->redirect(['index']);
     }
+
     /**
      * @param integer $id
-     * @return Order the loaded model
+     * @return Tag the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id): Order
+    protected function findModel($id): Tag
     {
-        if (($model = Order::findOne($id)) !== null) {
+        if (($model = Tag::findOne($id)) !== null) {
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
