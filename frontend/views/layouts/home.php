@@ -2,9 +2,11 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
-\frontend\assets\OwlCarouselAsset::register($this);
+use frontend\widgets\Blog\LastPostsWidget;
+use frontend\widgets\FeaturedProductsWidget;
 
-use frontend\widgets\FeaturedProductsWidget; ?>
+\frontend\assets\OwlCarouselAsset::register($this);
+?>
 <?php $this->beginContent('@frontend/views/layouts/main.php') ?>
 
 <div class="row">
@@ -24,6 +26,14 @@ use frontend\widgets\FeaturedProductsWidget; ?>
         <?= FeaturedProductsWidget::widget([
             'limit' => 4,
         ]) ?>
+
+        <h3>Last Posts</h3>
+
+        <?= LastPostsWidget::widget([
+            'limit' => 4,
+        ]) ?>
+
+
         <div id="carousel0" class="owl-carousel">
             <div class="item text-center">
                 <img src="http://static.shop.dev/cache/manufacturers/nfl-130x100.png" alt="NFL"

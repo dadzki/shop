@@ -9,6 +9,12 @@ return [
         '' => 'site/index',
         '<_a:login|logout|about|contact|signup>' => 'site/<_a>',
 
+        'blog' => 'blog/post/index',
+        'blog/tag/<slug:[\w\-]+>' => 'blog/post/tag',
+        'blog/<id:\d+>' => 'blog/post/post',
+        'blog/<id:\d+>/comment' => 'blog/post/comment',
+        'blog/<slug:[\w\-]+>' => 'blog/post/category',
+
         'catalog' => 'shop/catalog/index',
         ['class' => 'frontend\urls\CategoryUrlRule'],
         'catalog/<id:\d+>' => 'shop/catalog/product',
