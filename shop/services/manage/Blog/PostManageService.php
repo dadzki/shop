@@ -4,7 +4,7 @@
 namespace shop\services\manage\Blog;
 
 use shop\entities\Meta;
-use blog\entities\Blog\Post\Post;
+use shop\entities\Blog\Post\Post;
 use shop\entities\Blog\Tag;
 use shop\forms\manage\Blog\Post\PostForm;
 use shop\repositories\Blog\CategoryRepository;

@@ -6,7 +6,7 @@ namespace backend\controllers\blog;
 use shop\forms\manage\Blog\Post\PostForm;
 use shop\services\manage\Blog\PostManageService;
 use Yii;
-use blog\entities\Blog\Post\Post;
+use shop\entities\Blog\Post\Post;
 use backend\forms\Blog\PostSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;

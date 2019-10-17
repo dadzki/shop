@@ -3,7 +3,7 @@
 
 namespace shop\repositories\Blog;
 
-use blog\entities\Blog\Post\Post;
+use shop\entities\Blog\Post\Post;
 use shop\repositories\NotFoundException;
 
 class PostRepository

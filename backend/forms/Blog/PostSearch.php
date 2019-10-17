@@ -7,7 +7,7 @@ use shop\entities\Blog\Category;
 use shop\helpers\PostHelper;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use blog\entities\Blog\Post\Post;
+use shop\entities\Blog\Post\Post;
 use yii\helpers\ArrayHelper;
 
 class PostSearch extends Model

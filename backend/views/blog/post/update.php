@@ -3,7 +3,7 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $post \blog\entities\Blog\Post\Post */
+/* @var $post \shop\entities\Blog\Post\Post */
 /* @var $model shop\forms\manage\Blog\Post\PostForm */
 
 $this->title = 'Update Post: ' . $post->title;

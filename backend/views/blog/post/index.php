@@ -1,6 +1,6 @@
 <?php
 
-use blog\entities\Blog\Post\Post;
+use shop\entities\Blog\Post\Post;
 use shop\helpers\PriceHelper;
 use shop\helpers\PostHelper;
 use yii\grid\ActionColumn;

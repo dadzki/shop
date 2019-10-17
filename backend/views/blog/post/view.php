@@ -13,7 +13,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $post \blog\entities\Blog\Post\Post */
+/* @var $post \shop\entities\Blog\Post\Post */
 /* @var $modificationsProvider yii\data\ActiveDataProvider */
 
 $this->title = $post->title;

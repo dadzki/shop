@@ -1,6 +1,6 @@
 <?php
 
-namespace blog\entities\Blog\Post;
+namespace shop\entities\Blog\Post;
 
 use blog\entities\Blog\Post\Comment;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;

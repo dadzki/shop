@@ -4,7 +4,7 @@
 namespace shop\forms\manage\Blog\Post;
 
 use shop\entities\Blog\Category;
-use blog\entities\Blog\Post\Post;
+use shop\entities\Blog\Post\Post;
 use shop\forms\CompositeForm;
 use shop\forms\manage\MetaForm;
 use shop\validator\SlugValidator;

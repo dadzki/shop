@@ -2,7 +2,7 @@
 
 namespace shop\forms\manage\Blog\Post;
 
-use blog\entities\Blog\Post\Post;
+use shop\entities\Blog\Post\Post;
 use shop\entities\Blog\Tag;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
