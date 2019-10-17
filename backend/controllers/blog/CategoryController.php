@@ -2,20 +2,20 @@
 
 namespace backend\controllers\blog;
 
-use shop\forms\manage\Blog\TagForm;
-use shop\services\manage\Blog\TagManageService;
+use shop\forms\manage\Blog\CategoryForm;
+use shop\services\manage\Blog\CategoryManageService;
 use Yii;
-use shop\entities\Blog\Tag;
-use backend\forms\Blog\TagSearch;
+use shop\entities\Blog\Category;
+use backend\forms\Blog\CategorySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-class TagController extends Controller
+class CategoryController extends Controller
 {
     private $service;
 
-    public function __construct($id, $module, TagManageService $service, $config = [])
+    public function __construct($id, $module, CategoryManageService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
@@ -38,7 +38,7 @@ class TagController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new TagSearch();
+        $searchModel = new CategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -49,11 +49,12 @@ class TagController extends Controller
     /**
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionView($id)
     {
         return $this->render('view', [
-            'tag' => $this->findModel($id),
+            'category' => $this->findModel($id),
         ]);
     }
 
@@ -62,11 +63,11 @@ class TagController extends Controller
      */
     public function actionCreate()
     {
-        $form = new TagForm();
+        $form = new CategoryForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $tag = $this->service->create($form);
-                return $this->redirect(['view', 'id' => $tag->id]);
+                $category = $this->service->create($form);
+                return $this->redirect(['view', 'id' => $category->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -84,12 +85,12 @@ class TagController extends Controller
      */
     public function actionUpdate($id)
     {
-        $tag = $this->findModel($id);
-        $form = new TagForm($tag);
+        $category = $this->findModel($id);
+        $form = new CategoryForm($category);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($tag->id, $form);
-                return $this->redirect(['view', 'id' => $tag->id]);
+                $this->service->edit($category->id, $form);
+                return $this->redirect(['view', 'id' => $category->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -97,7 +98,7 @@ class TagController extends Controller
         }
         return $this->render('update', [
             'model' => $form,
-            'tag' => $tag,
+            'category' => $category,
         ]);
     }
 
@@ -118,12 +119,12 @@ class TagController extends Controller
 
     /**
      * @param integer $id
-     * @return Tag the loaded model
+     * @return Category the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id): Tag
+    protected function findModel($id): Category
     {
-        if (($model = Tag::findOne($id)) !== null) {
+        if (($model = Category::findOne($id)) !== null) {
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');

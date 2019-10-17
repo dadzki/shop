@@ -1,21 +1,22 @@
 <?php
 
+
 namespace backend\controllers\blog;
 
-use shop\forms\manage\Blog\TagForm;
-use shop\services\manage\Blog\TagManageService;
+use shop\forms\manage\Blog\Post\PostForm;
+use shop\services\manage\Blog\PostManageService;
 use Yii;
-use shop\entities\Blog\Tag;
-use backend\forms\Blog\TagSearch;
+use blog\entities\Blog\Post\Post;
+use backend\forms\Blog\PostSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-class TagController extends Controller
+class PostController extends Controller
 {
     private $service;
 
-    public function __construct($id, $module, TagManageService $service, $config = [])
+    public function __construct($id, $module, PostManageService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
@@ -25,9 +26,14 @@ class TagController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'activate' => ['POST'],
+                    'draft' => ['POST'],
+                    'delete-photo' => ['POST'],
+                    'move-photo-up' => ['POST'],
+                    'move-photo-down' => ['POST'],
                 ],
             ],
         ];
@@ -38,7 +44,7 @@ class TagController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new TagSearch();
+        $searchModel = new PostSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -53,7 +59,7 @@ class TagController extends Controller
     public function actionView($id)
     {
         return $this->render('view', [
-            'tag' => $this->findModel($id),
+            'post' => $this->findModel($id),
         ]);
     }
 
@@ -62,16 +68,17 @@ class TagController extends Controller
      */
     public function actionCreate()
     {
-        $form = new TagForm();
+        $form = new PostForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $tag = $this->service->create($form);
-                return $this->redirect(['view', 'id' => $tag->id]);
+                $post = $this->service->create($form);
+                return $this->redirect(['view', 'id' => $post->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
             }
         }
+
         return $this->render('create', [
             'model' => $form,
         ]);
@@ -80,16 +87,15 @@ class TagController extends Controller
     /**
      * @param integer $id
      * @return mixed
-     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
-        $tag = $this->findModel($id);
-        $form = new TagForm($tag);
+        $post = $this->findModel($id);
+        $form = new PostForm($post);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($tag->id, $form);
-                return $this->redirect(['view', 'id' => $tag->id]);
+                $this->service->edit($post->id, $form);
+                return $this->redirect(['view', 'id' => $post->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -97,7 +103,7 @@ class TagController extends Controller
         }
         return $this->render('update', [
             'model' => $form,
-            'tag' => $tag,
+            'post' => $post,
         ]);
     }
 
@@ -110,7 +116,6 @@ class TagController extends Controller
         try {
             $this->service->remove($id);
         } catch (\DomainException $e) {
-            Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
         }
         return $this->redirect(['index']);
@@ -118,12 +123,40 @@ class TagController extends Controller
 
     /**
      * @param integer $id
-     * @return Tag the loaded model
+     * @return mixed
+     */
+    public function actionActivate($id)
+    {
+        try {
+            $this->service->activate($id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
+    /**
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDraft($id)
+    {
+        try {
+            $this->service->draft($id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
+    /**
+     * @param integer $id
+     * @return Post the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id): Tag
+    protected function findModel($id): Post
     {
-        if (($model = Tag::findOne($id)) !== null) {
+        if (($model = Post::findOne($id)) !== null) {
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
