@@ -1,31 +1,37 @@
 <?php
 
+namespace shop\services\manage\Blog;
 
-namespace shop\services\manage\Shop;
-
-use shop\entities\Blog\Post\Comment;
-use shop\forms\Blog\CommentForm;
+use shop\forms\manage\Blog\Post\CommentEditForm;
 use shop\repositories\Blog\PostRepository;
-use shop\repositories\UserRepository;
 
 class CommentManageService
 {
     private $posts;
-    private $users;
 
-    public function __construct(PostRepository $posts, UserRepository $users)
+    public function __construct(PostRepository $posts)
     {
         $this->posts = $posts;
-        $this->users = $users;
     }
 
-    public function create($postId, $userId, CommentForm $form): Comment
+    public function edit($postId, $id, CommentEditForm $form): void
     {
         $post = $this->posts->get($postId);
-        $user = $this->users->get($userId);
-        $comment = $post->addComment($user->id, $form->parentId, $form->text);
+        $post->editComment($id, $form->parentId, $form->text);
         $this->posts->save($post);
+    }
 
-        return $comment;
+    public function activate($postId, $id): void
+    {
+        $post = $this->posts->get($postId);
+        $post->activateComment($id);
+        $this->posts->save($post);
+    }
+
+    public function remove($postId, $id): void
+    {
+        $post = $this->posts->get($postId);
+        $post->removeComment($id);
+        $this->posts->save($post);
     }
 }

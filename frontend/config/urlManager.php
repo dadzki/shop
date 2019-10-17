@@ -7,7 +7,7 @@ return [
     'cache' => false,
     'rules' => [
         '' => 'site/index',
-        '<_a:login|logout|about|contact|signup>' => 'site/<_a>',
+        '<_a:login|logout|contact|signup>' => 'site/<_a>',
 
         'blog' => 'blog/post/index',
         'blog/tag/<slug:[\w\-]+>' => 'blog/post/tag',
