@@ -1,10 +1,12 @@
 <?php
 
+namespace backend\controllers;
+
 use shop\forms\manage\PageForm;
 use shop\services\manage\PageManageService;
-use Yii;
 use shop\entities\Page;
 use backend\forms\PageSearch;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

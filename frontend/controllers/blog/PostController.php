@@ -1,7 +1,6 @@
 <?php
 
-
-namespace controllers\blog;
+namespace frontend\controllers\blog;
 
 use shop\forms\Blog\CommentForm;
 use shop\readModels\Blog\CategoryReadRepository;

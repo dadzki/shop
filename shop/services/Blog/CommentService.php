@@ -21,7 +21,7 @@ class CommentService
     public function create($postId, $userId, CommentForm $form): Comment
     {
         $post = $this->posts->get($postId);
-        $user = $this->users->get($userId);
+        $user = $this->users->getById($userId);
 
         $comment = $post->addComment($user->id, $form->parentId, $form->text);
 
