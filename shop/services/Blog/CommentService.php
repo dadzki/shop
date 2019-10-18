@@ -22,8 +22,11 @@ class CommentService
     {
         $post = $this->posts->get($postId);
         $user = $this->users->get($userId);
+
         $comment = $post->addComment($user->id, $form->parentId, $form->text);
+
         $this->posts->save($post);
+
         return $comment;
     }
 }
