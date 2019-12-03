@@ -4,7 +4,7 @@
 /* @var $content string */
 
 
-use frontend\widgets\CategoriesWidget;
+use frontend\widgets\Shop\CategoriesWidget;
 ?>
 <?php $this->beginContent('@frontend/views/layouts/main.php') ?>
 

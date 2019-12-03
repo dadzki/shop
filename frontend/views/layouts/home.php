@@ -3,7 +3,7 @@
 /* @var $content string */
 
 use frontend\widgets\Blog\LastPostsWidget;
-use frontend\widgets\FeaturedProductsWidget;
+use frontend\widgets\Shop\FeaturedProductsWidget;
 
 \frontend\assets\OwlCarouselAsset::register($this);
 ?>

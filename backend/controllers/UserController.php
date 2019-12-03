@@ -2,8 +2,8 @@
 
 namespace backend\controllers;
 
-use shop\forms\manage\user\UserCreateForm;
-use shop\forms\manage\user\UserEditForm;
+use shop\forms\manage\User\UserCreateForm;
+use shop\forms\manage\User\UserEditForm;
 use shop\services\manage\UserManageService;
 use Yii;
 use shop\entities\User;
@@ -34,7 +34,7 @@ class UserController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

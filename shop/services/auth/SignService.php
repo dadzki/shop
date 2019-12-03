@@ -3,10 +3,12 @@
 
 namespace shop\services\auth;
 
-
+use shop\access\Rbac;
 use shop\entities\User;
 use shop\forms\auth\SignupForm;
 use Yii;
+use shop\services\RoleManager;
+use shop\services\TransactionManager;
 use yii\mail\MailerInterface;
 
 class SignService
@@ -15,14 +17,22 @@ class SignService
      * @var MailerInterface
      */
     private $mailer;
+    private $roles;
+    private $transaction;
 
     /**
      * ContactService constructor.
      * @param MailerInterface $mailer
      */
-    public function __construct(MailerInterface $mailer)
+    public function __construct(
+        MailerInterface $mailer,
+        RoleManager $roles,
+        TransactionManager $transaction
+    )
     {
         $this->mailer = $mailer;
+        $this->roles = $roles;
+        $this->transaction = $transaction;
     }
 
     /**
@@ -33,9 +43,14 @@ class SignService
     {
         $user = User::signUp($form->username, $form->email, $form->password);
 
-        if (!$user->save()) {
-            throw new \RuntimeException('Ошибка при сохранении пользователя');
-        }
+        $this->transaction->wrap(function () use ($user) {
+            if (!$user->save()) {
+                throw new \RuntimeException('Ошибка при сохранении пользователя');
+            }
+            $this->roles->assign($user->id, Rbac::ROLE_USER);
+        });
+
+
 
         $this->sendEmail($user);
 
