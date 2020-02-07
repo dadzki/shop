@@ -1,0 +1,38 @@
+<?php
+
+namespace shop\services\cabinet;
+
+use shop\repositories\Shop\ProductRepository;
+use shop\repositories\UserRepository;
+
+class WishlistService
+{
+    private $users;
+    private $products;
+
+    public function __construct(UserRepository $users, ProductRepository $products)
+    {
+        $this->users = $users;
+        $this->products = $products;
+    }
+
+    public function add($userId, $productId): void
+    {
+        $user = $this->users->getById($userId);
+        $product = $this->products->get($productId);
+
+        $user->addToWishList($product->id);
+
+        $user->save();
+    }
+
+    public function remove($userId, $productId): void
+    {
+        $user = $this->users->getById($userId);
+        $product = $this->products->get($productId);
+
+        $user->removeFromWishList($product->id);
+
+        $user->save();
+    }
+}

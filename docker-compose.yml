@@ -21,8 +21,10 @@ services:
       - 9000
     links:
       - postgres
+      - elasticsearch
     volumes:
       - ./:/app
+      - ./docker/php-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
 
 
   nginx-backend:
@@ -43,6 +45,7 @@ services:
       - php-fpm
     volumes:
       - ./:/app
+      - ./backend/web/upload:/app/frontend/web/upload
     ports:
       - 8001:8001
 
@@ -65,12 +68,28 @@ services:
       - ./:/app
     depends_on:
       - postgres
+      - elasticsearch
     entrypoint: ["php", "yii"]
     working_dir: /app
     environment:
       DB_DSN: "pgsql:host=postgres;dbname=shop"
       DB_USERNAME: "shop"
       DB_PASSWORD: "secret"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.2
+    environment:
+      - bootstrap.memory_lock=true
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./docker/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
 
 volumes:
   postgres_data:

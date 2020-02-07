@@ -10,7 +10,7 @@ services:
       - 54328:5432
     volumes:
 #      - ./docker-entrypoint:/docker-entrypoint-initdb.d
-      - ./docker/db:/var/lib/postgresql/data
+      - ./docker/db_test:/var/lib/postgresql/data
 
   codeception:
     build:
@@ -22,7 +22,7 @@ services:
     entrypoint: ["vendor/bin/codecept"]
     working_dir: /app
     environment:
-      DB_DSN: "pgsql:host=postgres;dbname=shop_test"
+      DB_DSN: "pgsql:host=postgres_test;dbname=shop_test"
       DB_USERNAME: "shop_test"
       DB_PASSWORD: "secret"
 
@@ -34,8 +34,9 @@ services:
     depends_on:
       - postgres_test
     entrypoint: ["php", "yii_test"]
+    working_dir: /app
     environment:
-      DB_DSN: "pgsql:host=postgres;dbname=shop_test"
+      DB_DSN: "pgsql:host=postgres_test;dbname=shop_test"
       DB_USERNAME: "shop_test"
       DB_PASSWORD: "secret"
 

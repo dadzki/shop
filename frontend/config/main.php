@@ -9,14 +9,19 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => [
+        'log',
+        'common\bootstrap\SetUp',
+        'frontend\bootstrap\SetUp',
+        ],
+    'layout' => 'blank',
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'shop\entities\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
@@ -37,19 +42,11 @@ return [
             'errorAction' => 'site/error',
         ],
 
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-                '' => 'site/index',
-                '<_a:login|logout|about|contact|signup>' => 'site/<_a>',
-
-//                '<_c:[\w\-]+>' => '<_c>/index',
-//                '<_c:[\w\-]+>/<id:\d+>' => '<_c>/view',
-//                '<_c:[\w\-]+>/<_a:[\w\-]+>' => '<_c>/<_a>',
-//                '<_c:[\w\-]+>/<id:\d+>/<_a:[\w\-]+>' => '<_c>/<_a>',
-            ],
-        ],
+        'frontendUrlManager' => require __DIR__ . '/urlManager.php',
+        'backendUrlManager' => require __DIR__ . '/../../backend/config/urlManager.php',
+        'urlManager' => function() {
+            return Yii::$app->get('frontendUrlManager');
+        }
 
     ],
     'params' => $params,
